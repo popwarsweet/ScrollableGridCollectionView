@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27010C4F1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27010C4E1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift */; };
 		27B6087B1D344D9C00BE3CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B6087A1D344D9C00BE3CDD /* AppDelegate.swift */; };
 		27B608801D344D9C00BE3CDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27B6087E1D344D9C00BE3CDD /* Main.storyboard */; };
 		27B608821D344D9C00BE3CDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 27B608811D344D9C00BE3CDD /* Assets.xcassets */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		27010C4E1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScrollViewSupplimentaryLayoutAttributes.swift; path = Source/Layout/Attributes/ScrollViewSupplimentaryLayoutAttributes.swift; sourceTree = "<group>"; };
 		27B608771D344D9C00BE3CDD /* ScrollableGridCollectionView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScrollableGridCollectionView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27B6087A1D344D9C00BE3CDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27B6087F1D344D9C00BE3CDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -44,6 +46,7 @@
 		27010C4C1D358B6300F2A761 /* Attributes */ = {
 			isa = PBXGroup;
 			children = (
+				27010C4E1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift */,
 			);
 			name = Attributes;
 			sourceTree = "<group>";
@@ -212,6 +215,7 @@
 				27B608931D344F3800BE3CDD /* GridCollectionViewController.swift in Sources */,
 				27B608991D34566000BE3CDD /* ScrollViewSupplimentaryView.swift in Sources */,
 				27B608961D34539A00BE3CDD /* CollectionViewCell.swift in Sources */,
+				27010C4F1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift in Sources */,
 				27B608911D344F1800BE3CDD /* GridLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

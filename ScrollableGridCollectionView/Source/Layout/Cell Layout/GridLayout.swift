@@ -19,7 +19,7 @@ class GridLayout: UICollectionViewLayout {
     var layoutAttributes = [[UICollectionViewLayoutAttributes]]()
     
     /// Cached attributes of scroll view attributes
-    var supplimentaryScrollViewAttributes = [UICollectionViewLayoutAttributes]()
+    var supplimentaryScrollViewAttributes = [ScrollViewSupplimentaryLayoutAttributes]()
     
     /// Item size of cells
     var itemSize = CGSize(width: 296, height: 154)
@@ -68,9 +68,12 @@ class GridLayout: UICollectionViewLayout {
             layoutAttributes.append(rowAttributes)
             
             // create attributes for each supplimentary scroll view (using maxX of row for scroll views content width)
-            let svAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: ScrollViewSupplimentaryViewConst.kind, withIndexPath: NSIndexPath(forItem: 0, inSection: sectionIdx))
+            let svAttributes = ScrollViewSupplimentaryLayoutAttributes(forSupplementaryViewOfKind: ScrollViewSupplimentaryViewConst.kind,
+                                                                       withIndexPath: NSIndexPath(forItem: 0, inSection: sectionIdx))
             svAttributes.frame = CGRect(origin: CGPoint(x: edgeInsets.left, y: itemOrigin.y),
                                         size: CGSize(width: self.collectionView!.bounds.width, height: itemSize.height))
+            svAttributes.contentSize = CGSize(width: itemOrigin.x - itemHorizontalSpacing + edgeInsets.right,
+                                              height: svAttributes.frame.height)
             svAttributes.zIndex = GridLayoutConst.zIndexScrollView
             supplimentaryScrollViewAttributes.append(svAttributes)
             
@@ -79,16 +82,32 @@ class GridLayout: UICollectionViewLayout {
         }
     }
     
+    
+    // MARK: - Cell Layout Attributes
+    
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
         return layoutAttributes[indexPath.section][indexPath.row]
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var itemAttributes = Array(layoutAttributes.flatten())
-        itemAttributes.appendContentsOf(supplimentaryScrollViewAttributes)
-        return itemAttributes
+        var items = Array(layoutAttributes.flatten())
+        items.appendContentsOf(supplimentaryScrollViewAttributes as [UICollectionViewLayoutAttributes])
+        return items
     }
     
+    
+    // MARK: - Supplimentary Layout Attributes
+    
+    override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+        if elementKind == ScrollViewSupplimentaryViewConst.kind {
+            return supplimentaryScrollViewAttributes[indexPath.section]
+        } else {
+            return nil
+        }
+    }
+    
+    
+    // MARK: - Content Size
     override func collectionViewContentSize() -> CGSize {
         guard let lastScrollViewAttributes = supplimentaryScrollViewAttributes.last, let collectionView = self.collectionView else {
             return CGSize.zero
