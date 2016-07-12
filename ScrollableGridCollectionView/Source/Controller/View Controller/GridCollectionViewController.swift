@@ -40,12 +40,9 @@ class GridCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        let attributes = self.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(ScrollViewSupplimentaryViewConst.kind,
-                                                                                              atIndexPath: indexPath) as! ScrollViewSupplimentaryLayoutAttributes
         let sv = collectionView.dequeueReusableSupplementaryViewOfKind(ScrollViewSupplimentaryViewConst.kind,
                                                                        withReuseIdentifier: ScrollViewSupplimentaryViewConst.reuseId,
                                                                        forIndexPath: indexPath) as! ScrollViewSupplimentaryView
-        sv.scrollView.contentSize = attributes.contentSize
         return sv
     }
 }

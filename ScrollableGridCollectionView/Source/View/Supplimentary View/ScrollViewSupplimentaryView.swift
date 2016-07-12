@@ -23,6 +23,19 @@ class ScrollViewSupplimentaryView: UICollectionReusableView {
     }()
     
     
+    // MARK: - Layout
+    
+    override func applyLayoutAttributes(layoutAttributes: UICollectionViewLayoutAttributes) {
+        guard layoutAttributes is ScrollViewSupplimentaryLayoutAttributes else {
+            fatalError("\(self) should always receive \(String(ScrollViewSupplimentaryLayoutAttributes)) as layout attributes")
+        }
+        // update scroll view layout
+        let svAttributes = layoutAttributes as! ScrollViewSupplimentaryLayoutAttributes
+        scrollView.contentSize = svAttributes.contentSize
+        scrollView.contentOffset = svAttributes.contentOffset
+    }
+    
+    
     // MARK: - Init
     
     override init(frame: CGRect) {
