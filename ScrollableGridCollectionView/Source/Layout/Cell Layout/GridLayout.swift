@@ -71,7 +71,7 @@ class GridLayout: UICollectionViewLayout {
             // create attributes for each supplementary scroll view (using maxX of row for scroll views content width)
             let svAttributes = ScrollViewSupplementaryLayoutAttributes(forSupplementaryViewOfKind: ScrollViewSupplementaryViewConst.kind,
                                                                        withIndexPath: NSIndexPath(forItem: 0, inSection: sectionIdx))
-            svAttributes.frame = CGRect(origin: CGPoint(x: edgeInsets.left, y: itemOrigin.y),
+            svAttributes.frame = CGRect(origin: CGPoint(x: 0, y: itemOrigin.y),
                                         size: CGSize(width: self.collectionView!.bounds.width, height: itemSize.height))
             svAttributes.contentSize = CGSize(width: itemOrigin.x - itemHorizontalSpacing + edgeInsets.right,
                                               height: svAttributes.frame.height)
@@ -87,9 +87,10 @@ class GridLayout: UICollectionViewLayout {
     
     // MARK: - Layout Updates
     
-    // TODO: look at `UICollectionViewLayoutInvalidationContext` for smarter cache invalidation
-    
     func updateOffset(ofSection: Int, offset: CGFloat) {
+        guard ofSection >= 0 && ofSection <= supplementaryScrollViewAttributes.count-1 else {
+            return
+        }
         let rowAttributes = layoutAttributes[ofSection]
         // update cell attributes
         for attributes in rowAttributes {
@@ -126,6 +127,7 @@ class GridLayout: UICollectionViewLayout {
     
     
     // MARK: - Content Size
+    
     override func collectionViewContentSize() -> CGSize {
         guard let lastScrollViewAttributes = supplementaryScrollViewAttributes.last, let collectionView = self.collectionView else {
             return CGSize.zero
@@ -134,5 +136,22 @@ class GridLayout: UICollectionViewLayout {
         let maxY = lastScrollViewAttributes.frame.maxY + edgeInsets.bottom
         return CGSize(width: maxX, height: maxY)
     }
-
+    
+    
+    // MARK: - Bounds change
+    
+    override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
+        // only change if collection view size has changed
+        if self.collectionView!.bounds.size != newBounds.size {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func updateScrollViews(toWidth: CGFloat) {
+        for scrollViewAttributes in supplementaryScrollViewAttributes {
+            scrollViewAttributes.frame.size.width = toWidth
+        }
+    }
 }

@@ -35,10 +35,11 @@ class ScrollViewSupplementaryView: UICollectionReusableView {
     
     private(set) lazy var scrollView: UIScrollView = { [unowned self] in
         let sv = UIScrollView(frame: self.bounds)
-        sv.backgroundColor = UIColor.clearColor()
+        sv.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.4) // UIColor.clearColor()
         sv.showsHorizontalScrollIndicator = false
         sv.scrollsToTop = false
         sv.delegate = self
+        sv.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         return sv
     }()
     

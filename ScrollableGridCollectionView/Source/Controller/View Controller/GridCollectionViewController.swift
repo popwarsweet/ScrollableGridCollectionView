@@ -54,6 +54,13 @@ class GridCollectionViewController: UICollectionViewController {
         backgroundGradientLayer.frame = self.view.bounds
     }
     
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+        // invalidate widths of scroll views used for horizontal scrolling
+        self.gridLayout.updateScrollViews(size.width)
+        self.gridLayout.invalidateLayout()
+    }
+    
     
     // MARK: - Status bar
     
