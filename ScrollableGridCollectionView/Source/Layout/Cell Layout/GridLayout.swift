@@ -38,13 +38,14 @@ class GridLayout: UICollectionViewLayout {
         computeInitialLayout()
     }
     
+    
+    // MARK: - Layout attributes init
+    
     private func computeInitialLayout() {
         // ensure we have a collection view
         guard let collectionView = self.collectionView else { return }
-        
         // grab meta data needed for layout
         let numSections = collectionView.numberOfSections()
-        
         // iterate sections
         for sectionIdx in 0..<numSections {
             let numCols = collectionView.numberOfItemsInSection(sectionIdx)
@@ -54,9 +55,6 @@ class GridLayout: UICollectionViewLayout {
             supplementaryScrollViewAttributes.append(supplementaryScrollViewAttributes(sectionIdx, numOfItems: numCols))
         }
     }
-    
-    
-    // MARK: - Layout attributes init
     
     /// Convenience init for layout attributes of a supplementary scroll view in a particular row.
     private func supplementaryScrollViewAttributes(inRow: Int, numOfItems: Int) -> ScrollViewSupplementaryLayoutAttributes {
