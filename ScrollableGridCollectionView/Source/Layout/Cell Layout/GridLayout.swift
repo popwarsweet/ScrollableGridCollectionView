@@ -44,44 +44,58 @@ class GridLayout: UICollectionViewLayout {
         
         // grab meta data needed for layout
         let numSections = collectionView.numberOfSections()
-        var itemOrigin = CGPoint(x: edgeInsets.left, y: edgeInsets.top)
-        
-        // TODO: break up layout by rows/columns
         
         // iterate sections
         for sectionIdx in 0..<numSections {
-            // create attributes for each item
-            let numRows = collectionView.numberOfItemsInSection(sectionIdx)
-            var rowAttributes = [UICollectionViewLayoutAttributes]()
-            for itemIdx in 0..<numRows {
-                // get frame of item
-                let itemFrame = CGRect(origin: itemOrigin, size: itemSize)
-                // create attribute
-                let indexPath = NSIndexPath(forItem: itemIdx, inSection: sectionIdx)
-                let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-                attributes.frame = itemFrame
-                attributes.zIndex = GridLayoutConst.zIndexCell
-                rowAttributes.append(attributes)
-                // increment xOrigin to next column
-                itemOrigin.x += itemSize.width + itemHorizontalSpacing
-            }
-            // cache row
-            layoutAttributes.append(rowAttributes)
-            
-            // create attributes for each supplementary scroll view (using maxX of row for scroll views content width)
-            let svAttributes = ScrollViewSupplementaryLayoutAttributes(forSupplementaryViewOfKind: ScrollViewSupplementaryViewConst.kind,
-                                                                       withIndexPath: NSIndexPath(forItem: 0, inSection: sectionIdx))
-            svAttributes.frame = CGRect(origin: CGPoint(x: 0, y: itemOrigin.y),
-                                        size: CGSize(width: self.collectionView!.bounds.width, height: itemSize.height))
-            svAttributes.contentSize = CGSize(width: itemOrigin.x - itemHorizontalSpacing + edgeInsets.right,
-                                              height: svAttributes.frame.height)
-            svAttributes.section = sectionIdx
-            svAttributes.zIndex = GridLayoutConst.zIndexScrollView
-            supplementaryScrollViewAttributes.append(svAttributes)
-            
-            // increment yOrigin to next row
-            itemOrigin = CGPoint(x: edgeInsets.left, y: itemOrigin.y + itemSize.height + itemVerticalSpacing)
+            let numCols = collectionView.numberOfItemsInSection(sectionIdx)
+            // cache items in row
+            layoutAttributes.append(layoutAttributes(sectionIdx, numOfItems: numCols))
+            // cache scroll view
+            supplementaryScrollViewAttributes.append(supplementaryScrollViewAttributes(sectionIdx, numOfItems: numCols))
         }
+    }
+    
+    
+    // MARK: - Layout attributes init
+    
+    /// Convenience init for layout attributes of a supplementary scroll view in a particular row.
+    private func supplementaryScrollViewAttributes(inRow: Int, numOfItems: Int) -> ScrollViewSupplementaryLayoutAttributes {
+        guard numOfItems > 0 else {
+            fatalError("shouldn't be requesting scroll view for a section with no items")
+        }
+        // compute content width of scroll view for numOfItems
+        let rowHeight = itemSize.height + itemVerticalSpacing
+        let rowContentWidth = edgeInsets.left + edgeInsets.right + CGFloat(numOfItems)*itemSize.width + CGFloat(numOfItems-1)*itemHorizontalSpacing
+        // create attributes & set properties
+        let svAttributes = ScrollViewSupplementaryLayoutAttributes(forSupplementaryViewOfKind: ScrollViewSupplementaryViewConst.kind,
+                                                                   withIndexPath: NSIndexPath(forItem: 0, inSection: inRow))
+        svAttributes.frame = CGRect(origin: CGPoint(x: 0, y: edgeInsets.top + CGFloat(inRow)*rowHeight),
+                                    size: CGSize(width: self.collectionView!.bounds.width, height: itemSize.height))
+        svAttributes.contentSize = CGSize(width: rowContentWidth,
+                                          height: svAttributes.frame.height)
+        svAttributes.section = inRow
+        svAttributes.zIndex = GridLayoutConst.zIndexScrollView
+        return svAttributes
+    }
+    
+    /// Convenience init for layout attributes in a particular row.
+    private func layoutAttributes(inRow: Int, numOfItems: Int) -> [UICollectionViewLayoutAttributes] {
+        var rowAttributes = [UICollectionViewLayoutAttributes]()
+        // first frame in row
+        let rowHeight = itemSize.height + itemVerticalSpacing
+        var itemFrame = CGRect(origin: CGPoint(x: edgeInsets.left, y: edgeInsets.top + CGFloat(inRow)*rowHeight),
+                               size: itemSize)
+        // create items
+        for col in 0..<numOfItems {
+            let indexPath = NSIndexPath(forItem: col, inSection: inRow)
+            let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+            attributes.frame = itemFrame
+            attributes.zIndex = GridLayoutConst.zIndexCell
+            rowAttributes.append(attributes)
+            // increment to next items frame
+            itemFrame.origin.x += itemSize.width + itemHorizontalSpacing
+        }
+        return rowAttributes
     }
     
     
