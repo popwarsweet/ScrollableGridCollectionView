@@ -20,6 +20,7 @@ struct ScrollViewSupplementaryViewConst {
 
 protocol ScrollViewSupplementaryViewDelegate: class {
     func supplementaryScrollViewDidScroll(view: ScrollViewSupplementaryView)
+    func supplementaryScrollViewDidReceiveTap(atPoint: CGPoint, view: ScrollViewSupplementaryView)
 }
 
 
@@ -35,11 +36,14 @@ class ScrollViewSupplementaryView: UICollectionReusableView {
     
     private(set) lazy var scrollView: UIScrollView = { [unowned self] in
         let sv = UIScrollView(frame: self.bounds)
-        sv.backgroundColor = UIColor.clearColor()
+        sv.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.4) // UIColor.clearColor()
         sv.showsHorizontalScrollIndicator = false
         sv.scrollsToTop = false
         sv.delegate = self
         sv.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        // add gesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        sv.addGestureRecognizer(tapGesture)
         return sv
     }()
     
@@ -60,6 +64,14 @@ class ScrollViewSupplementaryView: UICollectionReusableView {
         let maxAllowableXOffset = svAttributes.contentSize.width - svAttributes.frame.width
         let xContentOffset = min(maxAllowableXOffset , max(0, svAttributes.contentOffset.x))
         scrollView.setContentOffset(CGPoint(x: xContentOffset, y: svAttributes.contentOffset.y), animated: false)
+    }
+    
+    
+    // MARK: - Gesture handling
+    
+    func handleTap(gesture: UITapGestureRecognizer) {
+        let location = gesture.locationInView(self)
+        delegate?.supplementaryScrollViewDidReceiveTap(location, view: self)
     }
     
     

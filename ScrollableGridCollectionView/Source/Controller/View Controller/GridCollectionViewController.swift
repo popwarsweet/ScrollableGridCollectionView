@@ -70,6 +70,15 @@ class GridCollectionViewController: UICollectionViewController {
 }
 
 
+// MARK: - CollectionView Delegate
+
+extension GridCollectionViewController {
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        print("selected: \(indexPath.section): \(indexPath.row)")
+    }
+}
+
+
 // MARK: - CollectionView Datasource
 
 extension GridCollectionViewController {
@@ -105,5 +114,11 @@ extension GridCollectionViewController: ScrollViewSupplementaryViewDelegate {
     func supplementaryScrollViewDidScroll(view: ScrollViewSupplementaryView) {
         // update offset of items in layout
         self.gridLayout.updateOffset(view.section, offset: view.scrollView.contentOffset.x)
+    }
+    func supplementaryScrollViewDidReceiveTap(atPoint: CGPoint, view: ScrollViewSupplementaryView) {
+        let locationInCv = view.convertPoint(atPoint, toView: self.collectionView)
+        if let indexPath = self.collectionView?.indexPathForItemAtPoint(locationInCv) {
+            self.collectionView?.delegate?.collectionView!(self.collectionView!, didSelectItemAtIndexPath: indexPath)
+        }
     }
 }
