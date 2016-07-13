@@ -1,5 +1,5 @@
 //
-//  ScrollViewSupplimentaryView.swift
+//  ScrollViewSupplementaryView.swift
 //  ScrollableGridCollectionView
 //
 //  Created by Kyle Zaragoza on 7/12/16.
@@ -10,27 +10,27 @@ import UIKit
 
 // MARK: - Constants
 
-struct ScrollViewSupplimentaryViewConst {
-    static let kind = "ScrollViewSupplimentaryView"
-    static let reuseId = "ScrollViewSupplimentaryViewId"
+struct ScrollViewSupplementaryViewConst {
+    static let kind = "ScrollViewSupplementaryView"
+    static let reuseId = "ScrollViewSupplementaryViewId"
 }
 
 
 // MARK: - Delegate Protocol
 
-protocol ScrollViewSupplimentaryViewDelegate: class {
-    func supplimentaryScrollViewDidScroll(view: ScrollViewSupplimentaryView)
+protocol ScrollViewSupplementaryViewDelegate: class {
+    func supplementaryScrollViewDidScroll(view: ScrollViewSupplementaryView)
 }
 
 
-// MARK: - ScrollViewSupplimentaryView
+// MARK: - ScrollViewSupplementaryView
 
-class ScrollViewSupplimentaryView: UICollectionReusableView {
+class ScrollViewSupplementaryView: UICollectionReusableView {
     
     /// Scroll view delegate
-    weak var delegate: ScrollViewSupplimentaryViewDelegate?
+    weak var delegate: ScrollViewSupplementaryViewDelegate?
     
-    /// The section which the supplimentary view is a part of.
+    /// The section which the supplementary view is a part of.
     private(set) var section: Int = -1
     
     private(set) lazy var scrollView: UIScrollView = { [unowned self] in
@@ -45,11 +45,11 @@ class ScrollViewSupplimentaryView: UICollectionReusableView {
     // MARK: - Layout
     
     override func applyLayoutAttributes(layoutAttributes: UICollectionViewLayoutAttributes) {
-        guard layoutAttributes is ScrollViewSupplimentaryLayoutAttributes else {
-            fatalError("\(self) should always receive \(String(ScrollViewSupplimentaryLayoutAttributes)) as layout attributes")
+        guard layoutAttributes is ScrollViewSupplementaryLayoutAttributes else {
+            fatalError("\(self) should always receive \(String(ScrollViewSupplementaryLayoutAttributes)) as layout attributes")
         }
         // update scroll view layout
-        let svAttributes = layoutAttributes as! ScrollViewSupplimentaryLayoutAttributes
+        let svAttributes = layoutAttributes as! ScrollViewSupplementaryLayoutAttributes
         scrollView.contentSize = svAttributes.contentSize
         scrollView.contentOffset = svAttributes.contentOffset
     }
@@ -71,8 +71,8 @@ class ScrollViewSupplimentaryView: UICollectionReusableView {
 
 // MARK: - Scroll view delegate
 
-extension ScrollViewSupplimentaryView: UIScrollViewDelegate {
+extension ScrollViewSupplementaryView: UIScrollViewDelegate {
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        delegate?.supplimentaryScrollViewDidScroll(self)
+        delegate?.supplementaryScrollViewDidScroll(self)
     }
 }

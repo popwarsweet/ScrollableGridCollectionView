@@ -24,7 +24,7 @@ class GridCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
         // Register cell classes
         self.collectionView!.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCellConst.reuseId)
-        self.collectionView!.registerClass(ScrollViewSupplimentaryView.self, forSupplementaryViewOfKind: ScrollViewSupplimentaryViewConst.kind, withReuseIdentifier: ScrollViewSupplimentaryViewConst.reuseId)
+        self.collectionView!.registerClass(ScrollViewSupplementaryView.self, forSupplementaryViewOfKind: ScrollViewSupplementaryViewConst.kind, withReuseIdentifier: ScrollViewSupplementaryViewConst.reuseId)
     }
 }
 
@@ -47,19 +47,19 @@ extension GridCollectionViewController {
     }
     
     override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        let sv = collectionView.dequeueReusableSupplementaryViewOfKind(ScrollViewSupplimentaryViewConst.kind,
-                                                                       withReuseIdentifier: ScrollViewSupplimentaryViewConst.reuseId,
-                                                                       forIndexPath: indexPath) as! ScrollViewSupplimentaryView
+        let sv = collectionView.dequeueReusableSupplementaryViewOfKind(ScrollViewSupplementaryViewConst.kind,
+                                                                       withReuseIdentifier: ScrollViewSupplementaryViewConst.reuseId,
+                                                                       forIndexPath: indexPath) as! ScrollViewSupplementaryView
         sv.delegate = self
         return sv
     }
 }
 
 
-// MARK: Supplimentary scroll view delegate
+// MARK: Supplementary scroll view delegate
 
-extension GridCollectionViewController: ScrollViewSupplimentaryViewDelegate {
-    func supplimentaryScrollViewDidScroll(view: ScrollViewSupplimentaryView) {
+extension GridCollectionViewController: ScrollViewSupplementaryViewDelegate {
+    func supplementaryScrollViewDidScroll(view: ScrollViewSupplementaryView) {
         // update offset of items in layout
         print("offset: \(view.scrollView.contentOffset.x)")
     }

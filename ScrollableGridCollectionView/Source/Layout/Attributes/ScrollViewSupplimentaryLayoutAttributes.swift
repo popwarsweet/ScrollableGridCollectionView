@@ -1,5 +1,5 @@
 //
-//  ScrollViewSupplimentaryLayoutAttributes.swift
+//  ScrollViewSupplementaryLayoutAttributes.swift
 //  ScrollableGridCollectionView
 //
 //  Created by Kyle Zaragoza on 7/13/16.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ScrollViewSupplimentaryLayoutAttributes: UICollectionViewLayoutAttributes {
+class ScrollViewSupplementaryLayoutAttributes: UICollectionViewLayoutAttributes {
     /// The content size of the scroll view.
     var contentSize = CGSize.zero
     /// The current content offset of the scroll view.
