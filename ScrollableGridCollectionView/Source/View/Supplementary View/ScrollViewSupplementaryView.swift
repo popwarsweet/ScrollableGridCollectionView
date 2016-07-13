@@ -55,8 +55,11 @@ class ScrollViewSupplementaryView: UICollectionReusableView {
         // note section should be set *before* contentSize/contentOffset so delegate is not called w/ incorrect section
         section = svAttributes.section
         scrollView.contentSize = svAttributes.contentSize
-        // using animated=false api to stop any leftover momentum after cell is reused
-        scrollView.setContentOffset(svAttributes.contentOffset, animated: false)
+        // using animated=false api to stop any leftover momentum after cell is reused,
+        // using min/max offset to ensure we don't set a contentOffset beyond contentSize
+        let maxAllowableXOffset = svAttributes.contentSize.width - scrollView.bounds.width
+        let xContentOffset = min(maxAllowableXOffset , max(0, svAttributes.contentOffset.x))
+        scrollView.setContentOffset(CGPoint(x: xContentOffset, y: svAttributes.contentOffset.y), animated: false)
     }
     
     
