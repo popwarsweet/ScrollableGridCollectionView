@@ -12,6 +12,19 @@ private let reuseIdentifier = "Cell"
 
 class GridCollectionViewController: UICollectionViewController {
     
+    /// Layer used for styling the background view
+    private lazy var backgroundGradientLayer: CAGradientLayer = { [unowned self] in
+        let gradient = CAGradientLayer()
+        gradient.frame = self.view.bounds
+        gradient.startPoint = CGPoint.zero
+        gradient.endPoint = CGPoint(x: 1, y: 1)
+        gradient.colors = [
+            UIColor(hue: 214/360, saturation: 4/100, brightness: 44/100, alpha: 1).CGColor,
+            UIColor(hue: 240/360, saturation: 14/100, brightness: 17/100, alpha: 1).CGColor
+        ]
+        return gradient
+    }()
+    
     /// The associated grid layout
     var gridLayout: GridLayout {
         return self.collectionViewLayout as! GridLayout
@@ -22,9 +35,30 @@ class GridCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // style
+        self.collectionView?.backgroundView = {
+            let view = UIView(frame: self.view.bounds)
+            view.layer.addSublayer(self.backgroundGradientLayer)
+            return view
+        }()
         // Register cell classes
         self.collectionView!.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCellConst.reuseId)
         self.collectionView!.registerClass(ScrollViewSupplementaryView.self, forSupplementaryViewOfKind: ScrollViewSupplementaryViewConst.kind, withReuseIdentifier: ScrollViewSupplementaryViewConst.reuseId)
+    }
+    
+    
+    // MARK: - Layout
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        backgroundGradientLayer.frame = self.view.bounds
+    }
+    
+    
+    // MARK: - Status bar
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true
     }
 }
 

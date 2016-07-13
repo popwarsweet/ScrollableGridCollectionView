@@ -28,7 +28,11 @@ class CollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.contentView.backgroundColor = UIColor.whiteColor()
+        self.contentView.backgroundColor = UIColor(hue:0.17, saturation:0.02, brightness:0.96, alpha:1.00)
+        self.layer.borderColor = UIColor(white: 0, alpha: 0.02).CGColor
+        self.layer.borderWidth = 1
+        self.layer.cornerRadius = 2
+        self.clipsToBounds = true
     }
     
     required init?(coder aDecoder: NSCoder) {
