@@ -9,7 +9,7 @@
         <scene sceneID="OCQ-J3-P2R">
             <objects>
                 <navigationController id="OeQ-Bf-RQ5" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="xdy-80-UXK">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="xdy-80-UXK">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

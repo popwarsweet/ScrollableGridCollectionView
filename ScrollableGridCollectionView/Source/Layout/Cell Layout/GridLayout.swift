@@ -25,19 +25,20 @@ class GridLayout: UICollectionViewLayout {
     var itemSize = CGSize(width: 296, height: 154)
     
     /// Spacing between each column
-    var itemHorizontalSpacing: CGFloat = 5
+    var itemHorizontalSpacing: CGFloat = 7
     
     /// Spacing between each row
-    var itemVerticalSpacing: CGFloat = 20
+    var itemVerticalSpacing: CGFloat = 15
     
     /// The padding on the edges of the views bounds
-    var edgeInsets = UIEdgeInsetsZero
+    var edgeInsets = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
     
     override func prepareLayout() {
-        // clear all items
-        layoutAttributes.removeAll()
-        supplementaryScrollViewAttributes.removeAll()
-        
+        guard layoutAttributes.count == 0 else { return }
+        computeInitialLayout()
+    }
+    
+    private func computeInitialLayout() {
         // ensure we have a collection view
         guard let collectionView = self.collectionView else { return }
         
@@ -74,12 +75,29 @@ class GridLayout: UICollectionViewLayout {
                                         size: CGSize(width: self.collectionView!.bounds.width, height: itemSize.height))
             svAttributes.contentSize = CGSize(width: itemOrigin.x - itemHorizontalSpacing + edgeInsets.right,
                                               height: svAttributes.frame.height)
+            svAttributes.section = sectionIdx
             svAttributes.zIndex = GridLayoutConst.zIndexScrollView
             supplementaryScrollViewAttributes.append(svAttributes)
             
             // increment yOrigin to next row
             itemOrigin = CGPoint(x: edgeInsets.left, y: itemOrigin.y + itemSize.height + itemVerticalSpacing)
         }
+    }
+    
+    
+    // MARK: - Layout Updates
+    
+    // TODO: look at `UICollectionViewLayoutInvalidationContext` for smarter cache invalidation
+    
+    func updateOffset(ofSection: Int, offset: CGFloat) {
+        let rowAttributes = layoutAttributes[ofSection]
+        // update cell attributes
+        for attributes in rowAttributes {
+            attributes.transform = CGAffineTransformMakeTranslation(-offset, 0)
+        }
+        // update supplementary attributes
+        supplementaryScrollViewAttributes[ofSection].contentOffset = CGPoint(x: offset, y: 0)
+        self.invalidateLayout()
     }
     
     
@@ -112,7 +130,7 @@ class GridLayout: UICollectionViewLayout {
         guard let lastScrollViewAttributes = supplementaryScrollViewAttributes.last, let collectionView = self.collectionView else {
             return CGSize.zero
         }
-        let maxX = collectionView.bounds.width + edgeInsets.right
+        let maxX = collectionView.bounds.width
         let maxY = lastScrollViewAttributes.frame.maxY + edgeInsets.bottom
         return CGSize(width: maxX, height: maxY)
     }

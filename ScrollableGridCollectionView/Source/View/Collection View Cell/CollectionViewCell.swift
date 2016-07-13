@@ -14,6 +14,15 @@ struct CollectionViewCellConst {
 
 class CollectionViewCell: UICollectionViewCell {
     
+    lazy var label: UILabel = { [unowned self] in
+        let label = UILabel(frame: self.contentView.bounds)
+        label.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        label.textAlignment = .Center
+        label.font = UIFont.boldSystemFontOfSize(22)
+        self.contentView.addSubview(label)
+        return label
+    }()
+    
     
     // MARK: - Init
     

@@ -35,7 +35,8 @@ class ScrollViewSupplementaryView: UICollectionReusableView {
     
     private(set) lazy var scrollView: UIScrollView = { [unowned self] in
         let sv = UIScrollView(frame: self.bounds)
-        sv.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.5)
+        sv.backgroundColor = UIColor.clearColor()
+        sv.showsHorizontalScrollIndicator = false
         sv.scrollsToTop = false
         sv.delegate = self
         return sv
@@ -50,8 +51,11 @@ class ScrollViewSupplementaryView: UICollectionReusableView {
         }
         // update scroll view layout
         let svAttributes = layoutAttributes as! ScrollViewSupplementaryLayoutAttributes
+        // note section should be set *before* contentSize/contentOffset so delegate is not called w/ incorrect section
+        section = svAttributes.section
         scrollView.contentSize = svAttributes.contentSize
-        scrollView.contentOffset = svAttributes.contentOffset
+        // using animated=false api to stop any leftover momentum after cell is reused
+        scrollView.setContentOffset(svAttributes.contentOffset, animated: false)
     }
     
     

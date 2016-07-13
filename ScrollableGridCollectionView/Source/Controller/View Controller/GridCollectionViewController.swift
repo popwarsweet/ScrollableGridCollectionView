@@ -42,7 +42,9 @@ extension GridCollectionViewController {
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(CollectionViewCellConst.reuseId, forIndexPath: indexPath)
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(CollectionViewCellConst.reuseId,
+                                                                         forIndexPath: indexPath) as! CollectionViewCell
+        cell.label.text = String(indexPath.row)
         return cell
     }
     
@@ -61,6 +63,6 @@ extension GridCollectionViewController {
 extension GridCollectionViewController: ScrollViewSupplementaryViewDelegate {
     func supplementaryScrollViewDidScroll(view: ScrollViewSupplementaryView) {
         // update offset of items in layout
-        print("offset: \(view.scrollView.contentOffset.x)")
+        self.gridLayout.updateOffset(view.section, offset: view.scrollView.contentOffset.x)
     }
 }

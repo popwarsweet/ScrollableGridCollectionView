@@ -13,4 +13,6 @@ class ScrollViewSupplementaryLayoutAttributes: UICollectionViewLayoutAttributes 
     var contentSize = CGSize.zero
     /// The current content offset of the scroll view.
     var contentOffset = CGPoint.zero
+    /// Section that the view is part of.
+    var section: Int = -1
 }
