@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27010C4F1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27010C4E1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift */; };
+		27010C4F1D35B13400F2A761 /* ScrollViewSupplementaryLayoutAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27010C4E1D35B13400F2A761 /* ScrollViewSupplementaryLayoutAttributes.swift */; };
 		27B6087B1D344D9C00BE3CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B6087A1D344D9C00BE3CDD /* AppDelegate.swift */; };
 		27B608801D344D9C00BE3CDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27B6087E1D344D9C00BE3CDD /* Main.storyboard */; };
 		27B608821D344D9C00BE3CDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 27B608811D344D9C00BE3CDD /* Assets.xcassets */; };
@@ -15,11 +15,11 @@
 		27B608911D344F1800BE3CDD /* GridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B608901D344F1800BE3CDD /* GridLayout.swift */; };
 		27B608931D344F3800BE3CDD /* GridCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B608921D344F3800BE3CDD /* GridCollectionViewController.swift */; };
 		27B608961D34539A00BE3CDD /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B608951D34539A00BE3CDD /* CollectionViewCell.swift */; };
-		27B608991D34566000BE3CDD /* ScrollViewSupplimentaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B608981D34566000BE3CDD /* ScrollViewSupplimentaryView.swift */; };
+		27B608991D34566000BE3CDD /* ScrollViewSupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B608981D34566000BE3CDD /* ScrollViewSupplementaryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		27010C4E1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScrollViewSupplimentaryLayoutAttributes.swift; path = Source/Layout/Attributes/ScrollViewSupplimentaryLayoutAttributes.swift; sourceTree = "<group>"; };
+		27010C4E1D35B13400F2A761 /* ScrollViewSupplementaryLayoutAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScrollViewSupplementaryLayoutAttributes.swift; path = Source/Layout/Attributes/ScrollViewSupplementaryLayoutAttributes.swift; sourceTree = "<group>"; };
 		27B608771D344D9C00BE3CDD /* ScrollableGridCollectionView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScrollableGridCollectionView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27B6087A1D344D9C00BE3CDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27B6087F1D344D9C00BE3CDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -29,7 +29,7 @@
 		27B608901D344F1800BE3CDD /* GridLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GridLayout.swift; path = "Source/Layout/Cell Layout/GridLayout.swift"; sourceTree = "<group>"; };
 		27B608921D344F3800BE3CDD /* GridCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GridCollectionViewController.swift; path = "Source/Controller/View Controller/GridCollectionViewController.swift"; sourceTree = "<group>"; };
 		27B608951D34539A00BE3CDD /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CollectionViewCell.swift; path = "Source/View/Collection View Cell/CollectionViewCell.swift"; sourceTree = "<group>"; };
-		27B608981D34566000BE3CDD /* ScrollViewSupplimentaryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScrollViewSupplimentaryView.swift; path = "Source/View/Supplimentary View/ScrollViewSupplimentaryView.swift"; sourceTree = "<group>"; };
+		27B608981D34566000BE3CDD /* ScrollViewSupplementaryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScrollViewSupplementaryView.swift; path = "Source/View/Supplementary View/ScrollViewSupplementaryView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +46,7 @@
 		27010C4C1D358B6300F2A761 /* Attributes */ = {
 			isa = PBXGroup;
 			children = (
-				27010C4E1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift */,
+				27010C4E1D35B13400F2A761 /* ScrollViewSupplementaryLayoutAttributes.swift */,
 			);
 			name = Attributes;
 			sourceTree = "<group>";
@@ -118,7 +118,7 @@
 		27B6088F1D344DDF00BE3CDD /* View */ = {
 			isa = PBXGroup;
 			children = (
-				27B608971D34562B00BE3CDD /* Supplimentary View */,
+				27B608971D34562B00BE3CDD /* Supplementary View */,
 				27B608941D34537700BE3CDD /* Collection View Cell */,
 			);
 			name = View;
@@ -132,12 +132,12 @@
 			name = "Collection View Cell";
 			sourceTree = "<group>";
 		};
-		27B608971D34562B00BE3CDD /* Supplimentary View */ = {
+		27B608971D34562B00BE3CDD /* Supplementary View */ = {
 			isa = PBXGroup;
 			children = (
-				27B608981D34566000BE3CDD /* ScrollViewSupplimentaryView.swift */,
+				27B608981D34566000BE3CDD /* ScrollViewSupplementaryView.swift */,
 			);
-			name = "Supplimentary View";
+			name = "Supplementary View";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -213,9 +213,9 @@
 			files = (
 				27B6087B1D344D9C00BE3CDD /* AppDelegate.swift in Sources */,
 				27B608931D344F3800BE3CDD /* GridCollectionViewController.swift in Sources */,
-				27B608991D34566000BE3CDD /* ScrollViewSupplimentaryView.swift in Sources */,
+				27B608991D34566000BE3CDD /* ScrollViewSupplementaryView.swift in Sources */,
 				27B608961D34539A00BE3CDD /* CollectionViewCell.swift in Sources */,
-				27010C4F1D35B13400F2A761 /* ScrollViewSupplimentaryLayoutAttributes.swift in Sources */,
+				27010C4F1D35B13400F2A761 /* ScrollViewSupplementaryLayoutAttributes.swift in Sources */,
 				27B608911D344F1800BE3CDD /* GridLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
