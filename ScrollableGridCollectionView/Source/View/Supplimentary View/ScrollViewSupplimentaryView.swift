@@ -8,17 +8,36 @@
 
 import UIKit
 
+// MARK: - Constants
+
 struct ScrollViewSupplimentaryViewConst {
     static let kind = "ScrollViewSupplimentaryView"
     static let reuseId = "ScrollViewSupplimentaryViewId"
 }
 
+
+// MARK: - Delegate Protocol
+
+protocol ScrollViewSupplimentaryViewDelegate: class {
+    func supplimentaryScrollViewDidScroll(view: ScrollViewSupplimentaryView)
+}
+
+
+// MARK: - ScrollViewSupplimentaryView
+
 class ScrollViewSupplimentaryView: UICollectionReusableView {
     
-    lazy var scrollView: UIScrollView = { [unowned self] in
+    /// Scroll view delegate
+    weak var delegate: ScrollViewSupplimentaryViewDelegate?
+    
+    /// The section which the supplimentary view is a part of.
+    private(set) var section: Int = -1
+    
+    private(set) lazy var scrollView: UIScrollView = { [unowned self] in
         let sv = UIScrollView(frame: self.bounds)
         sv.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.5)
         sv.scrollsToTop = false
+        sv.delegate = self
         return sv
     }()
     
@@ -47,4 +66,13 @@ class ScrollViewSupplimentaryView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
         
+}
+
+
+// MARK: - Scroll view delegate
+
+extension ScrollViewSupplimentaryView: UIScrollViewDelegate {
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        delegate?.supplimentaryScrollViewDidScroll(self)
+    }
 }
