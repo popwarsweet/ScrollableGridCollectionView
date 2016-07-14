@@ -5,6 +5,23 @@
 //  Created by Kyle Zaragoza on 7/12/16.
 //  Copyright © 2016 Kyle Zaragoza. All rights reserved.
 //
+//  Reference: (taken from https://www.raizlabs.com/dev/2014/02/animating-items-in-a-uicollectionview/)
+//
+//  Let’s consider the case where a cell at index path [0, 1] is removed from a collection view with three items.
+//
+//  1. Update the data source so that it will return the new item at the correct index path and the correct number of items for the section.
+//  2. Call deleteItemsAtIndexPaths: on the collection view with an index path equal to [0, 1] – second item in the first section.
+//  3. The layout receives prepareLayout.
+//  4. The layout receives prepareForCollectionViewUpdates: with an array containing one update item representing the deleted item.
+//  5. The layout receives finalLayoutAttributesForDisappearingItemAtIndexPath: with index path [0, 1] – this is in reference to the deleted item being removed
+//     from the layout completely.
+//  6. The layout receives finalLayoutAttributesForDisappearingItemAtIndexPath: with index path [0, 2] – this is in reference to the item previously at [0, 2]
+//     “disappearing” as it moves to [0, 1]
+//  7. The layout receives initialLayoutAttributesForAppearingItemAtIndexPath: with index path [0, 1] – this is in reference to the item previously at [0, 2]
+//     “appearing” as it moves to [0, 1]
+//  8. The layout receives finalizeCollectionViewUpdates.
+//  9. The layout animates the cells to their new positions based on the attributes returned in steps 5-7.
+//
 
 import UIKit
 
@@ -30,8 +47,6 @@ class GridLayout: UICollectionViewLayout {
     // Caches for keeping current/previous attributes
     private var currentCellAttributes = [[UICollectionViewLayoutAttributes]]()
     private var currentSupplementaryAttributesByKind = [String: [ScrollViewSupplementaryLayoutAttributes]]()
-    private var cachedCellAttributes = [[UICollectionViewLayoutAttributes]]()
-    private var cachedSupplementaryAttributesByKind = [String: [ScrollViewSupplementaryLayoutAttributes]]()
     
     // Containers for keeping track of changing items
     private var insertedIndexPaths = [NSIndexPath]()
@@ -39,25 +54,8 @@ class GridLayout: UICollectionViewLayout {
     private var insertedSectionIndices = [Int]()
     private var removedSectionIndices = [Int]()
     
-    override init() {
-        super.init()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
     override func prepareLayout() {
         super.prepareLayout()
-        // Deep-copy attributes in current cache
-        cachedCellAttributes = currentCellAttributes.map() {
-            return $0.map() {
-                return $0.copy() as! UICollectionViewLayoutAttributes
-            }
-        }
-        for (kind, attributes) in currentSupplementaryAttributesByKind {
-            cachedSupplementaryAttributesByKind[kind] = attributes.map() { $0.copy() as! ScrollViewSupplementaryLayoutAttributes }
-        }
     }
     
     
