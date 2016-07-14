@@ -193,17 +193,20 @@ class GridLayout: UICollectionViewLayout {
     
     // MARK: - Collection view updates
     
-//    override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-//        let attributes = currentCellAttributes[itemIndexPath.section][itemIndexPath.item].copy() as! UICollectionViewLayoutAttributes
-//        if insertedIndexPaths.contains(itemIndexPath) {
-//            // If this is a newly inserted item, make it grow into place from its nominal index path
-//            attributes.transform3D = CATransform3DMakeScale(0.1, 0.1, 1.0)
-//        } else if insertedSectionIndices.contains(itemIndexPath.section) {
-//            // if it's part of a new section, fly it in from the left
-//            attributes.transform3D = CATransform3DMakeTranslation(-self.collectionView!.bounds.size.width, 0, 0)
-//        }
-//        return attributes
-//    }
+    override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+        var attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)
+        if insertedIndexPaths.contains(itemIndexPath) {
+            // If this is a newly inserted item
+        } else if insertedSectionIndices.contains(itemIndexPath.section) {
+            // if it's part of a new section
+        } else {
+            // If being inserted becuase of another cell being removed, slide from right
+            let scrollViewAtts = currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind]![itemIndexPath.section]
+            attributes = layoutAttributesForCell(NSIndexPath(forItem: itemIndexPath.item + 1, inSection: itemIndexPath.section),
+                                                 itemOffset: scrollViewAtts.contentOffset.x)
+        }
+        return attributes
+    }
     
     override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
         var attributes: UICollectionViewLayoutAttributes?
