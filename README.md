@@ -6,7 +6,7 @@ A grid layout collection view with horizontally scrollable cards. It supports in
 <img src="https://github.com/popwarsweet/ScrollableGridCollectionView/blob/master/demo.gif" width="600">
 
 ## Known Issues
-- Horizontal scroll position is not mainted after removing sections of the collection view.
+- Horizontal scroll position is not maintained after removing sections of the collection view.
 
 ## Author
 
