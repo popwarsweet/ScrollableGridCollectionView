@@ -138,7 +138,7 @@ class GridLayout: UICollectionViewLayout {
         return svAttributes
     }
     
-    /// Convenience init for layout attributes in a particular row.
+    /// Convenience init for layout attributes of cells in a particular row.
     private func layoutAttributes(inRow: Int, numOfItems: Int, itemOffset: CGFloat = 0) -> [UICollectionViewLayoutAttributes] {
         var rowAttributes = [UICollectionViewLayoutAttributes]()
         // first frame in row
