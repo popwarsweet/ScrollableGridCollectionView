@@ -247,22 +247,6 @@ class GridLayout: UICollectionViewLayout {
         }
     }
     
-    private func allowableCurrentContentOffsetX(inSection: Int) -> CGFloat? {
-        guard let scrollAtts = currentScrollViewAttributes[inSection] else {
-            return nil
-        }
-//        print("contentSize: \(scrollAtts.contentSize.width), offset: \(scrollAtts.contentOffset.x))")
-        let itemOffsetInRow = currentCellAttributes[inSection]![0]
-//        print("itemsOffset: \(itemOffsetInRow.transform3D.m41)")
-        
-        var offsetX: CGFloat = scrollAtts.contentSize.width - scrollAtts.contentOffset.x
-        // the scroll view is in an invalid scroll position, move over cells
-        if offsetX < self.collectionView!.bounds.width {
-            offsetX = scrollAtts.contentSize.width - self.collectionView!.bounds.width
-        }
-        return offsetX
-    }
-    
     override func finalizeCollectionViewUpdates() {
         super.finalizeCollectionViewUpdates()
         // dump all tracked updates
