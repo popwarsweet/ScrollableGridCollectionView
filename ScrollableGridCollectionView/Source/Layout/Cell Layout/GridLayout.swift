@@ -168,10 +168,7 @@ class GridLayout: UICollectionViewLayout {
     // MARK: - Layout Updates
     
     func updateOffset(ofSection: Int, offset: CGFloat, invalidateLayout: Bool = true) {
-        guard ofSection >= 0 && ofSection <= currentScrollViewAttributes.count-1 else {
-            return
-        }
-        guard let rowAttributes = currentCellAttributes[ofSection] else {
+        guard let scrollAttributes = currentScrollViewAttributes[ofSection], let rowAttributes = currentCellAttributes[ofSection] else {
             fatalError("should not be updating offset for row which doesn't exist")
         }
         // update cell attributes
@@ -179,7 +176,7 @@ class GridLayout: UICollectionViewLayout {
             attributes.transform = CGAffineTransformMakeTranslation(-offset, 0)
         }
         // update supplementary attributes
-        currentScrollViewAttributes[ofSection]?.contentOffset = CGPoint(x: offset, y: 0)
+        scrollAttributes.contentOffset = CGPoint(x: offset, y: 0)
         if invalidateLayout {
             self.invalidateLayout()
         }
@@ -298,10 +295,9 @@ class GridLayout: UICollectionViewLayout {
             } else if item.updateAction == .Delete {
                 guard let indexPath = item.indexPathBeforeUpdate else { return }
                 if indexPath.item == NSNotFound {
-                    removedSectionIndices.append(item.indexPathBeforeUpdate!.section)
-                    
+                    removedSectionIndices.append(indexPath.section)
                 } else {
-                    removedIndexPaths.append(item.indexPathBeforeUpdate!)
+                    removedIndexPaths.append(indexPath)
                 }
             }
         }
@@ -325,10 +321,6 @@ class GridLayout: UICollectionViewLayout {
     
     override func finalizeCollectionViewUpdates() {
         super.finalizeCollectionViewUpdates()
-        for sectionIdx in removedSectionIndices {
-            // TODO: cache scroll view attributes on prepare for updates
-            // attempt to restore scroll position
-        }
         // dump all tracked updates
         insertedIndexPaths = [NSIndexPath]()
         removedIndexPaths = [NSIndexPath]()
