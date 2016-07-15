@@ -47,7 +47,7 @@ class GridLayout: UICollectionViewLayout {
     // Caches for keeping current/previous attributes
     private var currentCellAttributes = [Int: [UICollectionViewLayoutAttributes]]()
     private var currentScrollViewAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
-    private var cachedSupplementaryAttributesByKind = [Int: ScrollViewSupplementaryLayoutAttributes]()
+    private var cachedSupplementaryAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
     
     // Containers for keeping track of changing items
     private var insertedIndexPaths = [NSIndexPath]()
@@ -55,18 +55,19 @@ class GridLayout: UICollectionViewLayout {
     private var insertedSectionIndices = [Int]()
     private var removedSectionIndices = [Int]()
     
-    override func prepareLayout() {
-        super.prepareLayout()
-    }
-    
-    private func deepCopySupplementaryAttributes() {
-        cachedSupplementaryAttributesByKind = [Int: ScrollViewSupplementaryLayoutAttributes]()
+    private func deepCopyOfSupplementaryAttributes(atts: [Int: ScrollViewSupplementaryLayoutAttributes]) -> [Int: ScrollViewSupplementaryLayoutAttributes] {
+        var copiedAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
         for (section, atts) in currentScrollViewAttributes {
             guard let copy = atts.copy() as? ScrollViewSupplementaryLayoutAttributes else {
                 fatalError("unable to copy scroll view attributes")
             }
-            cachedSupplementaryAttributesByKind[section] = copy
+            copiedAttributes[section] = copy
         }
+        return copiedAttributes
+    }
+    
+    override func prepareLayout() {
+        super.prepareLayout()
     }
     
     
@@ -79,6 +80,8 @@ class GridLayout: UICollectionViewLayout {
             currentScrollViewAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
             return
         }
+        // cache old attributes
+        cachedSupplementaryAttributes = deepCopyOfSupplementaryAttributes(currentScrollViewAttributes)
         // grab meta data needed for layout
         let numSections = dataSource.numberOfSectionsInCollectionView!(collectionView)
         // iterate sections
