@@ -12,6 +12,9 @@ private let reuseIdentifier = "Cell"
 
 class GridCollectionViewController: UICollectionViewController {
     
+    /// Dummy data source
+    var numItemsInSection = Array(count: 10, repeatedValue: 3)
+    
     /// Layer used for styling the background view
     private lazy var backgroundGradientLayer: CAGradientLayer = { [unowned self] in
         let gradient = CAGradientLayer()
@@ -19,8 +22,8 @@ class GridCollectionViewController: UICollectionViewController {
         gradient.startPoint = CGPoint.zero
         gradient.endPoint = CGPoint(x: 1, y: 1)
         gradient.colors = [
-            UIColor(hue: 214/360, saturation: 4/100, brightness: 44/100, alpha: 1).CGColor,
-            UIColor(hue: 240/360, saturation: 14/100, brightness: 17/100, alpha: 1).CGColor
+            UIColor(hue:0.00, saturation:0.00, brightness:0.26, alpha:1).CGColor,
+            UIColor(hue:0.00, saturation:0.00, brightness:0.00, alpha:1).CGColor
         ]
         return gradient
     }()
@@ -44,6 +47,56 @@ class GridCollectionViewController: UICollectionViewController {
         // Register cell classes
         self.collectionView!.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCellConst.reuseId)
         self.collectionView!.registerClass(ScrollViewSupplementaryView.self, forSupplementaryViewOfKind: ScrollViewSupplementaryViewConst.kind, withReuseIdentifier: ScrollViewSupplementaryViewConst.reuseId)
+    }
+    
+    
+    // MARK: - Cell insertion/removal
+    
+    func insertCell(path: NSIndexPath) {
+        let newCount = numItemsInSection[path.section] + 1
+        numItemsInSection[path.section] = newCount
+        self.collectionView!.performBatchUpdates(
+            {
+                if self.numItemsInSection[path.section] == 1 {
+                    self.collectionView!.insertSections(NSIndexSet(index: path.section))
+                } else {
+                    self.collectionView!.insertItemsAtIndexPaths([path])
+                }
+            }, completion: { (success) in
+                if let suppScrollView = self.collectionView!.supplementaryViewForElementKind(ScrollViewSupplementaryViewConst.kind,
+                    atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as? ScrollViewSupplementaryView {
+                    let attributes = self.gridLayout.layoutAttributesForSupplementaryViewOfKind(ScrollViewSupplementaryViewConst.kind,
+                        atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as! ScrollViewSupplementaryLayoutAttributes
+                    suppScrollView.scrollView.contentSize = attributes.contentSize
+                    suppScrollView.scrollView.contentOffset = attributes.contentOffset
+                }
+        })
+    }
+    func deleteCell(path: NSIndexPath) {
+        let newCount = numItemsInSection[path.section] - 1
+        numItemsInSection[path.section] = newCount
+        var deleteSection = false
+        if newCount == 0 {
+            deleteSection = true
+            self.numItemsInSection.removeAtIndex(path.section)
+        }
+        self.collectionView!.performBatchUpdates(
+            {
+                if deleteSection {
+                    self.collectionView!.deleteSections(NSIndexSet(index: path.section))
+                } else {
+                    self.collectionView!.deleteItemsAtIndexPaths([path])
+                }
+            }, completion: { (success) in
+                if deleteSection == false {
+                    if let suppScrollView = self.collectionView!.supplementaryViewForElementKind(ScrollViewSupplementaryViewConst.kind,
+                        atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as? ScrollViewSupplementaryView {
+                        let attributes = self.gridLayout.layoutAttributesForSupplementaryViewOfKind(ScrollViewSupplementaryViewConst.kind,
+                            atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as! ScrollViewSupplementaryLayoutAttributes
+                        suppScrollView.applyLayoutAttributes(attributes)
+                    }
+                }
+        })
     }
     
     
@@ -75,6 +128,7 @@ class GridCollectionViewController: UICollectionViewController {
 extension GridCollectionViewController {
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         print("selected: \(indexPath.section): \(indexPath.row)")
+        deleteCell(indexPath)
     }
 }
 
@@ -83,12 +137,12 @@ extension GridCollectionViewController {
 
 extension GridCollectionViewController {
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 10
+        return numItemsInSection.filter(){ $0 > 0 }.count
     }
     
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return numItemsInSection[section]
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
