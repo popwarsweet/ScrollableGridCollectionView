@@ -46,28 +46,8 @@ class GridLayout: UICollectionViewLayout {
     
     // Caches for keeping current/previous attributes
     private var currentCellAttributes = [Int: [UICollectionViewLayoutAttributes]]()
-    private var currentSupplementaryAttributesByKind = [String: [Int: ScrollViewSupplementaryLayoutAttributes]]()
-    
-    // convenience getters
-    private var allScrollViewAttributes: [Int: ScrollViewSupplementaryLayoutAttributes] {
-        if let atts = currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind] {
-            return atts
-        } else {
-            let emptyAtts = [Int: ScrollViewSupplementaryLayoutAttributes]()
-            currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind] = emptyAtts
-            return emptyAtts
-        }
-    }
-    private func setScrollViewAttributes(attributes: ScrollViewSupplementaryLayoutAttributes, forSection: Int) {
-        var svAttributes: [Int: ScrollViewSupplementaryLayoutAttributes]
-        if let existingAtts = currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind] {
-            svAttributes = existingAtts
-            svAttributes[forSection] = attributes
-        } else {
-            svAttributes = [forSection: attributes]
-        }
-        currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind] = svAttributes
-    }
+    private var currentScrollViewAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
+    private var cachedSupplementaryAttributesByKind = [Int: ScrollViewSupplementaryLayoutAttributes]()
     
     // Containers for keeping track of changing items
     private var insertedIndexPaths = [NSIndexPath]()
@@ -85,8 +65,8 @@ class GridLayout: UICollectionViewLayout {
     private func computeEntireLayout(preserveScroll: Bool = true) {
         // ensure we have a collection view
         guard let collectionView = self.collectionView, let dataSource = collectionView.dataSource else {
-            currentCellAttributes.removeAll()
-            currentSupplementaryAttributesByKind.removeAll()
+            currentCellAttributes = [Int: [UICollectionViewLayoutAttributes]]()
+            currentScrollViewAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
             return
         }
         // grab meta data needed for layout
@@ -98,7 +78,7 @@ class GridLayout: UICollectionViewLayout {
             let scrollViewAtts = supplementaryScrollViewAttributes(sectionIdx, numOfItems: numCols)
             // attempt to preserve old offset if we have it
             if preserveScroll {
-                if let oldSvAttributes = allScrollViewAttributes[sectionIdx] {
+                if let oldSvAttributes = currentScrollViewAttributes[sectionIdx] {
                     existingRowOffset = oldSvAttributes.contentOffset.x
                     scrollViewAtts.contentOffset = CGPoint(x: existingRowOffset, y: 0)
                 }
@@ -106,16 +86,14 @@ class GridLayout: UICollectionViewLayout {
             // cache items in row
             currentCellAttributes[sectionIdx] = layoutAttributes(sectionIdx, numOfItems: numCols, itemOffset: existingRowOffset)
             // cache scroll view
-            setScrollViewAttributes(scrollViewAtts, forSection: sectionIdx)
+            currentScrollViewAttributes[sectionIdx] = scrollViewAtts
         }
         // remove sections outside of section count
-        let remainingKeys = allScrollViewAttributes.keys.sort().filter() { $0 >= numSections }
-        var scrollViewAtts = allScrollViewAttributes
+        let remainingKeys = currentScrollViewAttributes.keys.filter() { $0 >= numSections }
         for sectionIdx in remainingKeys {
-            scrollViewAtts[sectionIdx] = nil
+            currentScrollViewAttributes[sectionIdx] = nil
             currentCellAttributes[sectionIdx] = nil
         }
-        currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind] = scrollViewAtts
     }
     
     /// Convenience init for layout attributes of a supplementary scroll view in a particular row.
@@ -180,7 +158,7 @@ class GridLayout: UICollectionViewLayout {
     // MARK: - Layout Updates
     
     func updateOffset(ofSection: Int, offset: CGFloat, invalidateLayout: Bool = true) {
-        guard ofSection >= 0 && ofSection <= currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind]!.count-1 else {
+        guard ofSection >= 0 && ofSection <= currentScrollViewAttributes.count-1 else {
             return
         }
         guard let rowAttributes = currentCellAttributes[ofSection] else {
@@ -191,7 +169,7 @@ class GridLayout: UICollectionViewLayout {
             attributes.transform = CGAffineTransformMakeTranslation(-offset, 0)
         }
         // update supplementary attributes
-        allScrollViewAttributes[ofSection]?.contentOffset = CGPoint(x: offset, y: 0)
+        currentScrollViewAttributes[ofSection]?.contentOffset = CGPoint(x: offset, y: 0)
         if invalidateLayout {
             self.invalidateLayout()
         }
@@ -206,7 +184,7 @@ class GridLayout: UICollectionViewLayout {
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var allAttributes = currentCellAttributes.flatMap() { $0.1 }
-        let scrollAttributes = allScrollViewAttributes.flatMap() { $0.1 }
+        let scrollAttributes = currentScrollViewAttributes.flatMap() { $0.1 }
         allAttributes.appendContentsOf(scrollAttributes as [UICollectionViewLayoutAttributes])
         return allAttributes
     }
@@ -215,7 +193,11 @@ class GridLayout: UICollectionViewLayout {
     // MARK: - Supplementary Layout Attributes
     
     override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        return currentSupplementaryAttributesByKind[elementKind]![indexPath.section]
+        if elementKind == ScrollViewSupplementaryViewConst.kind {
+            return currentScrollViewAttributes[indexPath.section]
+        } else {
+            return nil
+        }
     }
     
     
@@ -230,13 +212,13 @@ class GridLayout: UICollectionViewLayout {
         } else {
             if removedSectionIndices.count == 0 {
                 // If being inserted because of another cell being removed, slide from right
-                let scrollViewAtts = allScrollViewAttributes[itemIndexPath.section]!
+                let scrollViewAtts = currentScrollViewAttributes[itemIndexPath.section]!
                 attributes = layoutAttributesForCell(NSIndexPath(forItem: itemIndexPath.item + 1, inSection: itemIndexPath.section),
                                                      itemOffset: scrollViewAtts.contentOffset.x)
             } else {
                 // If being inserted becuase of a section being removed
                 let nextSection = itemIndexPath.section + 1
-                if let scrollViewAtts = allScrollViewAttributes[nextSection] {
+                if let scrollViewAtts = currentScrollViewAttributes[nextSection] {
                     attributes = layoutAttributesForCell(NSIndexPath(forItem: itemIndexPath.item, inSection: nextSection),
                                                          itemOffset: scrollViewAtts.contentOffset.x)
                 }
@@ -250,7 +232,7 @@ class GridLayout: UICollectionViewLayout {
         if (removedIndexPaths.contains(itemIndexPath) || removedSectionIndices.contains(itemIndexPath.section)) {
             // get current offset of row
             var rowOffset: CGFloat = 0
-            if let scrollAttributes = allScrollViewAttributes[itemIndexPath.section] {
+            if let scrollAttributes = currentScrollViewAttributes[itemIndexPath.section] {
                 rowOffset = scrollAttributes.contentOffset.x
             }
             // Make it fall off the screen
@@ -288,7 +270,7 @@ class GridLayout: UICollectionViewLayout {
                                                          numOfItems: numCols)
                     currentCellAttributes[indexPath.section] = rowAttributes
                     // insert scroll view
-                    setScrollViewAttributes(supplementaryScrollViewAttributes(indexPath.section, numOfItems: numCols), forSection: indexPath.section)
+                    currentScrollViewAttributes[indexPath.section] = supplementaryScrollViewAttributes(indexPath.section, numOfItems: numCols)
                 } else {
                     // track insert
                     insertedIndexPaths.append(indexPath)
@@ -297,11 +279,11 @@ class GridLayout: UICollectionViewLayout {
                                                          numOfItems: self.collectionView!.numberOfItemsInSection(indexPath.section))
                     currentCellAttributes[item.indexPathAfterUpdate!.section] = rowAttributes
                     // update scroll view
-                    let oldScrollViewAttributes = allScrollViewAttributes[indexPath.section]
+                    let oldScrollViewAttributes = currentScrollViewAttributes[indexPath.section]
                     let colCount = self.collectionView!.dataSource!.collectionView(self.collectionView!, numberOfItemsInSection: indexPath.section)
                     let newScrollViewAttributes = supplementaryScrollViewAttributes(indexPath.section, numOfItems: colCount)
                     newScrollViewAttributes.contentOffset = oldScrollViewAttributes?.contentOffset ?? CGPoint.zero
-                    setScrollViewAttributes(newScrollViewAttributes, forSection: indexPath.section)
+                    currentScrollViewAttributes[indexPath.section] = newScrollViewAttributes
                 }
             } else if item.updateAction == .Delete {
                 guard let indexPath = item.indexPathBeforeUpdate else { return }
@@ -316,7 +298,7 @@ class GridLayout: UICollectionViewLayout {
     }
     
     private func allowableCurrentContentOffsetX(inSection: Int) -> CGFloat? {
-        guard let scrollAtts = allScrollViewAttributes[inSection] else {
+        guard let scrollAtts = currentScrollViewAttributes[inSection] else {
             return nil
         }
 //        print("contentSize: \(scrollAtts.contentSize.width), offset: \(scrollAtts.contentOffset.x))")
@@ -351,7 +333,7 @@ class GridLayout: UICollectionViewLayout {
         guard let collectionView = self.collectionView else {
             return CGSize.zero
         }
-        let maxScrollViewY = allScrollViewAttributes.values.reduce(0.0) { (maxY, attributes) -> CGFloat in
+        let maxScrollViewY = currentScrollViewAttributes.values.reduce(0.0) { (maxY, attributes) -> CGFloat in
             if attributes.frame.maxY > maxY {
                 return attributes.frame.maxY
             } else {
@@ -376,7 +358,7 @@ class GridLayout: UICollectionViewLayout {
     }
     
     func updateScrollViews(toWidth: CGFloat) {
-        for (_, scrollViewAttributes) in allScrollViewAttributes {
+        for (_, scrollViewAttributes) in currentScrollViewAttributes {
             scrollViewAttributes.frame.size.width = toWidth
         }
     }
