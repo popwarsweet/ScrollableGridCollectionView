@@ -179,7 +179,7 @@ class GridLayout: UICollectionViewLayout {
     
     // MARK: - Layout Updates
     
-    func updateOffset(ofSection: Int, offset: CGFloat) {
+    func updateOffset(ofSection: Int, offset: CGFloat, invalidateLayout: Bool = true) {
         guard ofSection >= 0 && ofSection <= currentSupplementaryAttributesByKind[ScrollViewSupplementaryViewConst.kind]!.count-1 else {
             return
         }
@@ -192,7 +192,9 @@ class GridLayout: UICollectionViewLayout {
         }
         // update supplementary attributes
         allScrollViewAttributes[ofSection]?.contentOffset = CGPoint(x: offset, y: 0)
-        self.invalidateLayout()
+        if invalidateLayout {
+            self.invalidateLayout()
+        }
     }
     
     
@@ -304,7 +306,6 @@ class GridLayout: UICollectionViewLayout {
             } else if item.updateAction == .Delete {
                 guard let indexPath = item.indexPathBeforeUpdate else { return }
                 if indexPath.item == NSNotFound {
-                    print("deleting section: \(indexPath.section)")
                     removedSectionIndices.append(item.indexPathBeforeUpdate!.section)
                     
                 } else {
@@ -312,6 +313,22 @@ class GridLayout: UICollectionViewLayout {
                 }
             }
         }
+    }
+    
+    private func allowableCurrentContentOffsetX(inSection: Int) -> CGFloat? {
+        guard let scrollAtts = allScrollViewAttributes[inSection] else {
+            return nil
+        }
+//        print("contentSize: \(scrollAtts.contentSize.width), offset: \(scrollAtts.contentOffset.x))")
+        let itemOffsetInRow = currentCellAttributes[inSection]![0]
+//        print("itemsOffset: \(itemOffsetInRow.transform3D.m41)")
+        
+        var offsetX: CGFloat = scrollAtts.contentSize.width - scrollAtts.contentOffset.x
+        // the scroll view is in an invalid scroll position, move over cells
+        if offsetX < self.collectionView!.bounds.width {
+            offsetX = scrollAtts.contentSize.width - self.collectionView!.bounds.width
+        }
+        return offsetX
     }
     
     override func finalizeCollectionViewUpdates() {
