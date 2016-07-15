@@ -15,4 +15,12 @@ class ScrollViewSupplementaryLayoutAttributes: UICollectionViewLayoutAttributes 
     var contentOffset = CGPoint.zero
     /// Section that the view is part of.
     var section: Int = -1
+    
+    override func copyWithZone(zone: NSZone) -> AnyObject {
+        let copy = super.copyWithZone(zone) as! ScrollViewSupplementaryLayoutAttributes
+        copy.contentSize = contentSize
+        copy.contentOffset = contentOffset
+        copy.section = section
+        return copy
+    }
 }
