@@ -47,28 +47,12 @@ class GridLayout: UICollectionViewLayout {
     // Caches for keeping current/previous attributes
     private var currentCellAttributes = [Int: [UICollectionViewLayoutAttributes]]()
     private var currentScrollViewAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
-    private var cachedSupplementaryAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
     
     // Containers for keeping track of changing items
     private var insertedIndexPaths = [NSIndexPath]()
     private var removedIndexPaths = [NSIndexPath]()
     private var insertedSectionIndices = [Int]()
     private var removedSectionIndices = [Int]()
-    
-    private func deepCopyOfSupplementaryAttributes(atts: [Int: ScrollViewSupplementaryLayoutAttributes]) -> [Int: ScrollViewSupplementaryLayoutAttributes] {
-        var copiedAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
-        for (section, atts) in currentScrollViewAttributes {
-            guard let copy = atts.copy() as? ScrollViewSupplementaryLayoutAttributes else {
-                fatalError("unable to copy scroll view attributes")
-            }
-            copiedAttributes[section] = copy
-        }
-        return copiedAttributes
-    }
-    
-    override func prepareLayout() {
-        super.prepareLayout()
-    }
     
     
     // MARK: - Layout attributes init
@@ -80,8 +64,6 @@ class GridLayout: UICollectionViewLayout {
             currentScrollViewAttributes = [Int: ScrollViewSupplementaryLayoutAttributes]()
             return
         }
-        // cache old attributes
-        cachedSupplementaryAttributes = deepCopyOfSupplementaryAttributes(currentScrollViewAttributes)
         // grab meta data needed for layout
         let numSections = dataSource.numberOfSectionsInCollectionView!(collectionView)
         // iterate sections
@@ -212,47 +194,6 @@ class GridLayout: UICollectionViewLayout {
     
     
     // MARK: - Collection view updates
-    
-    override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        var attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)
-        if insertedIndexPaths.contains(itemIndexPath) {
-            // If this is a newly inserted item
-        } else if insertedSectionIndices.contains(itemIndexPath.section) {
-            // if it's part of a new section
-        } else {
-            if removedSectionIndices.count == 0 {
-                // If being inserted because of another cell being removed, slide from right
-                let scrollViewAtts = currentScrollViewAttributes[itemIndexPath.section]!
-                attributes = layoutAttributesForCell(NSIndexPath(forItem: itemIndexPath.item + 1, inSection: itemIndexPath.section),
-                                                     itemOffset: scrollViewAtts.contentOffset.x)
-            } else {
-                // If being inserted becuase of a section being removed
-                let nextSection = itemIndexPath.section + 1
-                if let scrollViewAtts = currentScrollViewAttributes[nextSection] {
-                    attributes = layoutAttributesForCell(NSIndexPath(forItem: itemIndexPath.item, inSection: nextSection),
-                                                         itemOffset: scrollViewAtts.contentOffset.x)
-                }
-            }
-        }
-        return attributes
-    }
-    
-    override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        var attributes: UICollectionViewLayoutAttributes?
-        if (removedIndexPaths.contains(itemIndexPath) || removedSectionIndices.contains(itemIndexPath.section)) {
-            // get current offset of row
-            var rowOffset: CGFloat = 0
-            if let scrollAttributes = currentScrollViewAttributes[itemIndexPath.section] {
-                rowOffset = scrollAttributes.contentOffset.x
-            }
-            // Make it fall off the screen
-            attributes = layoutAttributesForCell(itemIndexPath)
-            let transform = CATransform3DMakeTranslation(-rowOffset, 0, 0)
-            attributes!.transform3D = transform
-            attributes!.alpha = 0
-        }
-        return attributes
-    }
     
     override func invalidateLayoutWithContext(context: UICollectionViewLayoutInvalidationContext) {
         super.invalidateLayoutWithContext(context)
