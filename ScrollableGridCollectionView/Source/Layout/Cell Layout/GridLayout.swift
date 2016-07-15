@@ -59,6 +59,16 @@ class GridLayout: UICollectionViewLayout {
         super.prepareLayout()
     }
     
+    private func deepCopySupplementaryAttributes() {
+        cachedSupplementaryAttributesByKind = [Int: ScrollViewSupplementaryLayoutAttributes]()
+        for (section, atts) in currentScrollViewAttributes {
+            guard let copy = atts.copy() as? ScrollViewSupplementaryLayoutAttributes else {
+                fatalError("unable to copy scroll view attributes")
+            }
+            cachedSupplementaryAttributesByKind[section] = copy
+        }
+    }
+    
     
     // MARK: - Layout attributes init
     
@@ -320,10 +330,10 @@ class GridLayout: UICollectionViewLayout {
             // attempt to restore scroll position
         }
         // dump all tracked updates
-        insertedIndexPaths.removeAll()
-        removedIndexPaths.removeAll()
-        insertedSectionIndices.removeAll()
-        removedSectionIndices.removeAll()
+        insertedIndexPaths = [NSIndexPath]()
+        removedIndexPaths = [NSIndexPath]()
+        insertedSectionIndices = [Int]()
+        removedSectionIndices = [Int]()
     }
  
  
