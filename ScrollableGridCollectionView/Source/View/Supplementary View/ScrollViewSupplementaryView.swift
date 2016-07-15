@@ -59,7 +59,8 @@ class ScrollViewSupplementaryView: UICollectionReusableView {
         // illegal scroll offset, update it
         // TODO: move this to layout, its affecting underlying object held by layout
         if abs((layoutAttributes.contentSize.width - layoutAttributes.contentOffset.x)) < layoutAttributes.frame.width {
-            layoutAttributes.contentOffset = CGPoint(x: layoutAttributes.contentSize.width - layoutAttributes.frame.width, y: 0)
+            let legalXOffset = max(0, layoutAttributes.contentSize.width - layoutAttributes.frame.width)
+            layoutAttributes.contentOffset = CGPoint(x: legalXOffset, y: 0)
         }
         // if animated, we'll set content size after animation finishes
         if !animated || scrollView.contentOffset == layoutAttributes.contentOffset {
