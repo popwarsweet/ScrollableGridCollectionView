@@ -50,25 +50,24 @@ class GridCollectionViewController: UICollectionViewController {
     }
     
     
-    // MARK: - Cell insertion/removal
+    // MARK: - Cell insertion/removal testing
     
+    func insertSection(index: Int, columnCount: Int) {
+        numItemsInSection.insert(columnCount, atIndex: index)
+        self.collectionView!.insertSections(NSIndexSet(index: index))
+    }
     func insertCell(path: NSIndexPath) {
         let newCount = numItemsInSection[path.section] + 1
         numItemsInSection[path.section] = newCount
-        self.collectionView!.performBatchUpdates(
-            {
-                if self.numItemsInSection[path.section] == 1 {
-                    self.collectionView!.insertSections(NSIndexSet(index: path.section))
-                } else {
-                    self.collectionView!.insertItemsAtIndexPaths([path])
-                }
-            }, completion: { (success) in
+        self.collectionView!.performBatchUpdates({
+                self.collectionView!.insertItemsAtIndexPaths([path])
+            }, completion: { _ in
+                // update size of scroll view
                 if let suppScrollView = self.collectionView!.supplementaryViewForElementKind(ScrollViewSupplementaryViewConst.kind,
                     atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as? ScrollViewSupplementaryView {
                     let attributes = self.gridLayout.layoutAttributesForSupplementaryViewOfKind(ScrollViewSupplementaryViewConst.kind,
                         atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as! ScrollViewSupplementaryLayoutAttributes
-                    suppScrollView.scrollView.contentSize = attributes.contentSize
-                    suppScrollView.scrollView.contentOffset = attributes.contentOffset
+                    suppScrollView.applyLayoutAttributes(attributes)
                 }
         })
     }
@@ -80,20 +79,20 @@ class GridCollectionViewController: UICollectionViewController {
             deleteSection = true
             self.numItemsInSection.removeAtIndex(path.section)
         }
-        self.collectionView!.performBatchUpdates(
-            {
+        self.collectionView!.performBatchUpdates({
                 if deleteSection {
                     self.collectionView!.deleteSections(NSIndexSet(index: path.section))
                 } else {
                     self.collectionView!.deleteItemsAtIndexPaths([path])
                 }
-            }, completion: { (success) in
+            }, completion: { _ in
                 if deleteSection == false {
+                    // update size of scroll view
                     if let suppScrollView = self.collectionView!.supplementaryViewForElementKind(ScrollViewSupplementaryViewConst.kind,
                         atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as? ScrollViewSupplementaryView {
                         let attributes = self.gridLayout.layoutAttributesForSupplementaryViewOfKind(ScrollViewSupplementaryViewConst.kind,
                             atIndexPath: NSIndexPath(forItem: 0, inSection: path.section)) as! ScrollViewSupplementaryLayoutAttributes
-                        suppScrollView.applyLayoutAttributes(attributes)
+                        suppScrollView.applyLayoutAttributes(attributes, animated: true)
                     }
                 }
         })
