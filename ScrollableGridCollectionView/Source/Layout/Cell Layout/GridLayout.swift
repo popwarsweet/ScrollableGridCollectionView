@@ -57,7 +57,7 @@ class GridLayout: UICollectionViewLayout {
     
     // MARK: - Layout attributes init
     
-    private func computeEntireLayout(preserveScroll: Bool = true) {
+    private func computeEntireLayout(preserveScroll: Bool = true, newSize: CGSize) {
         // ensure we have a collection view
         guard let collectionView = self.collectionView, let dataSource = collectionView.dataSource else {
             currentCellAttributes = [Int: [UICollectionViewLayoutAttributes]]()
@@ -152,6 +152,11 @@ class GridLayout: UICollectionViewLayout {
     
     // MARK: - Layout Updates
     
+    func transitionToSize(size: CGSize) {
+        computeEntireLayout(newSize: size)
+        updateScrollViews(size.width)
+    }
+    
     func updateOffset(ofSection: Int, offset: CGFloat, invalidateLayout: Bool = true) {
         guard let scrollAttributes = currentScrollViewAttributes[ofSection], let rowAttributes = currentCellAttributes[ofSection] else {
             fatalError("should not be updating offset for row which doesn't exist")
@@ -199,7 +204,7 @@ class GridLayout: UICollectionViewLayout {
         super.invalidateLayoutWithContext(context)
         if context.invalidateDataSourceCounts {
             // rebuild the world
-            computeEntireLayout()
+            computeEntireLayout(newSize: self.collectionView!.bounds.size)
         }
     }
     
@@ -255,10 +260,10 @@ class GridLayout: UICollectionViewLayout {
         insertedSectionIndices = [Int]()
         removedSectionIndices = [Int]()
     }
- 
- 
+    
+    
     // MARK: - Content Size
- 
+    
     override func collectionViewContentSize() -> CGSize {
         guard let collectionView = self.collectionView else {
             return CGSize.zero
